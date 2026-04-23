@@ -20,7 +20,7 @@ class Machine(Base):
     code: Mapped[str] = mapped_column(String(10))  # e.g., "A1", "B2"
     type: Mapped[str] = mapped_column(String(10))  # "washer" or "dryer"
     block: Mapped[str] = mapped_column(String(1))  # A, B, C, D, E
-    cycle_duration_minutes: Mapped[int] = mapped_column(Integer, default=45)
+    cycle_duration_minutes: Mapped[int] = mapped_column(Integer, default=30)
     qr_code: Mapped[str] = mapped_column(String(50), unique=True)  # e.g., "E-WASHER-A1"
 
     sessions: Mapped[list["LaundrySession"]] = relationship(back_populates="machine")

@@ -4,19 +4,19 @@ function Navigation() {
   return (
     <nav className="navigation">
       <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
-        <span className="icon">🏠</span>
-        <span className="label">Home</span>
+        <span className="icon">[=]</span>
+        <span className="label">HOME</span>
       </NavLink>
       <NavLink
         to="/my-machines"
         className={({ isActive }) => (isActive ? 'active' : '')}
       >
-        <span className="icon">🧺</span>
-        <span className="label">My Machines</span>
+        <span className="icon">{'{@}'}</span>
+        <span className="label">MINE</span>
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
-        <span className="icon">👤</span>
-        <span className="label">Profile</span>
+        <span className="icon">[*]</span>
+        <span className="label">STATS</span>
       </NavLink>
     </nav>
   )

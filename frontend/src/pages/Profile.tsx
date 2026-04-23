@@ -7,15 +7,15 @@ function Profile() {
   const formatReason = (reason: string) => {
     switch (reason) {
       case 'claim':
-        return 'Claimed machine'
+        return 'CLAIMED'
       case 'release':
-        return 'Released machine'
+        return 'RELEASED'
       case 'ping_sent':
-        return 'Pinged user'
+        return 'PING SENT'
       case 'ping_received':
-        return 'Got pinged'
+        return 'PING RECEIVED'
       default:
-        return reason
+        return reason.toUpperCase()
     }
   }
 
@@ -36,7 +36,7 @@ function Profile() {
   return (
     <div className="profile">
       <header className="header">
-        <h1>👤 Profile</h1>
+        <h1>PROFILE</h1>
       </header>
 
       <main className="content">
@@ -47,19 +47,18 @@ function Profile() {
               <div className="block">Block {profile.block}</div>
             </div>
             <div className="coin-balance">
-              <div className="coin-icon">💰</div>
               <div className="coin-amount">{profile.coins}</div>
-              <div className="coin-label">coins</div>
+              <div className="coin-label">COINS</div>
             </div>
           </div>
         )}
 
         <div className="transactions-section">
-          <h2>Transaction History</h2>
+          <h2>HISTORY</h2>
           {transactionsLoading ? (
-            <div className="loading">Loading transactions...</div>
+            <div className="loading">LOADING...</div>
           ) : !transactions || transactions.length === 0 ? (
-            <div className="empty-state">No transactions yet</div>
+            <div className="empty-state">NO TRANSACTIONS YET</div>
           ) : (
             <ul className="transaction-list">
               {transactions.map((tx) => (
@@ -70,7 +69,7 @@ function Profile() {
                   </div>
                   <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
                     {tx.amount > 0 ? '+' : ''}
-                    {tx.amount} 🪙
+                    {tx.amount}
                   </div>
                 </li>
               ))}

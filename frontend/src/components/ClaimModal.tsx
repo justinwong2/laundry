@@ -55,14 +55,14 @@ function ClaimModal({ machine, onClose }: ClaimModalProps) {
 
         <div className="modal-actions">
           <button className="btn-secondary" onClick={onClose}>
-            Cancel
+            CANCEL
           </button>
           <button
             className="btn-primary"
             onClick={handleClaim}
             disabled={claimMutation.isPending}
           >
-            {claimMutation.isPending ? 'Claiming...' : 'Claim Machine (+1 🪙)'}
+            {claimMutation.isPending ? 'CLAIMING...' : 'CLAIM [+1 COIN]'}
           </button>
         </div>
       </div>

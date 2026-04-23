@@ -40,14 +40,14 @@ function MyMachines() {
   return (
     <div className="my-machines">
       <header className="header">
-        <h1>🧺 My Machines</h1>
+        <h1>MY MACHINES</h1>
       </header>
 
       <main className="content">
         {!sessions || sessions.length === 0 ? (
           <div className="empty-state">
-            <p>You don't have any active laundry sessions.</p>
-            <p>Go to Home to claim a machine!</p>
+            <p>NO ACTIVE SESSIONS</p>
+            <p>CLAIM A MACHINE FROM HOME</p>
           </div>
         ) : (
           <ul className="session-list">
@@ -72,7 +72,7 @@ function MyMachines() {
                     onClick={() => handleRelease(session.id)}
                     disabled={releaseMutation.isPending || !timeInfo.isDone}
                   >
-                    {releaseMutation.isPending ? 'Releasing...' : 'Release (+2 🪙)'}
+                    {releaseMutation.isPending ? 'RELEASING...' : 'RELEASE [+2]'}
                   </button>
                 </li>
               )

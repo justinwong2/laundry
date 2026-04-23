@@ -58,19 +58,19 @@ function PingModal({ machine, userCoins, onClose }: PingModalProps) {
         </div>
 
         <p className="ping-cost">
-          Cost: <strong>3 🪙</strong> (you have {userCoins} 🪙)
+          COST: <strong>3 COINS</strong> (YOU HAVE {userCoins})
         </p>
 
         <div className="modal-actions">
           <button className="btn-secondary" onClick={onClose}>
-            Cancel
+            CANCEL
           </button>
           <button
             className="btn-primary"
             onClick={handlePing}
             disabled={pingMutation.isPending || userCoins < 3}
           >
-            {pingMutation.isPending ? 'Sending...' : 'Send Ping'}
+            {pingMutation.isPending ? 'SENDING...' : 'SEND PING'}
           </button>
         </div>
       </div>

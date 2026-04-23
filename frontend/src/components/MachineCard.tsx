@@ -27,10 +27,10 @@ function MachineCard({ machine, onClick, isOwner }: MachineCardProps) {
     return `${minutes}m`
   }
 
-  const getStatusEmoji = () => {
-    if (isAvailable) return '🟢'
-    if (isDone) return '⚠️'
-    return '🔴'
+  const getStatusIndicator = () => {
+    if (isAvailable) return 'FREE'
+    if (isDone) return '!!!'
+    return 'BUSY'
   }
 
   const getStatusClass = () => {
@@ -42,7 +42,7 @@ function MachineCard({ machine, onClick, isOwner }: MachineCardProps) {
   return (
     <div className={`machine-card ${getStatusClass()}`} onClick={onClick}>
       <div className="machine-code">{machine.code}</div>
-      <div className="machine-status">{getStatusEmoji()}</div>
+      <div className="machine-status">{getStatusIndicator()}</div>
       {session && (
         <>
           <div className="machine-user">@{session.username || 'user'}</div>
