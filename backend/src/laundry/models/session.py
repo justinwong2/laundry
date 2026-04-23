@@ -23,6 +23,7 @@ class LaundrySession(Base):
     ended_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     message: Mapped[str | None] = mapped_column(Text, nullable=True)
     reminder_sent: Mapped[bool] = mapped_column(Boolean, default=False)
+    done_notification_sent: Mapped[bool] = mapped_column(Boolean, default=False)
 
     user: Mapped["User"] = relationship(back_populates="sessions")
     machine: Mapped["Machine"] = relationship(back_populates="sessions")

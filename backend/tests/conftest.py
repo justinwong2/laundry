@@ -1,9 +1,22 @@
 """Test fixtures."""
 
+import os
+
+# Set test database URL BEFORE importing app (uses in-memory SQLite)
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from laundry.main import app
+from laundry.db.database import init_db
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def setup_database():
+    """Create database tables before each test."""
+    await init_db()
+    yield
 
 
 @pytest.fixture

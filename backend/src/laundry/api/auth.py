@@ -63,8 +63,17 @@ async def get_current_user_id(
     """
     Dependency to extract and validate current user from initData header.
 
+    In debug mode, accepts 'dev:{user_id}' format for testing with Postman/curl.
+
     Returns:
         Telegram user ID
     """
+    # Dev bypass for local testing (only when DEBUG=true)
+    if settings.debug and x_telegram_init_data.startswith("dev:"):
+        try:
+            return int(x_telegram_init_data.split(":")[1])
+        except (IndexError, ValueError):
+            raise HTTPException(status_code=401, detail="Invalid dev auth format")
+
     user_data = validate_init_data(x_telegram_init_data)
     return user_data["id"]

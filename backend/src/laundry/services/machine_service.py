@@ -16,7 +16,9 @@ class MachineService:
         """Get all machines with their current session status."""
         async with async_session() as session:
             result = await session.execute(
-                select(Machine).options(selectinload(Machine.sessions))
+                select(Machine).options(
+                    selectinload(Machine.sessions).selectinload(LaundrySession.user)
+                )
             )
             machines = result.scalars().all()
 
@@ -62,7 +64,9 @@ class MachineService:
             result = await session.execute(
                 select(Machine)
                 .where(Machine.id == machine_id)
-                .options(selectinload(Machine.sessions))
+                .options(
+                    selectinload(Machine.sessions).selectinload(LaundrySession.user)
+                )
             )
             machine = result.scalar_one_or_none()
             if not machine:
@@ -87,6 +91,11 @@ class MachineService:
                         "expected_end_at": active_session.expected_end_at,
                         "ended_at": active_session.ended_at,
                         "message": active_session.message,
+                        "username": (
+                            active_session.user.username
+                            if active_session.user
+                            else None
+                        ),
                     }
                     if active_session
                     else None

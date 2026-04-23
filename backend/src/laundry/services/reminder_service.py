@@ -60,12 +60,13 @@ async def check_done_notifications() -> None:
     now = datetime.utcnow()
 
     async with async_session() as session:
-        # Sessions that are past expected end but not yet released
+        # Sessions that are past expected end but not yet released AND not yet notified
         result = await session.execute(
             select(LaundrySession)
             .where(
                 LaundrySession.ended_at.is_(None),
                 LaundrySession.expected_end_at <= now,
+                LaundrySession.done_notification_sent.is_(False),
             )
         )
         done_sessions = result.scalars().all()
@@ -86,8 +87,11 @@ async def check_done_notifications() -> None:
                     await send_done_notification(
                         user.telegram_id, machine.code, machine.type
                     )
+                    laundry_session.done_notification_sent = True
                 except Exception:
                     pass  # Log and continue
+
+        await session.commit()
 
 
 def start_scheduler() -> None:

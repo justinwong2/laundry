@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///laundry.db"
     log_level: str = "INFO"
     webapp_url: str = ""
+    debug: bool = False  # Enable dev auth bypass (NEVER use in production!)
 
     # Coin settings
     coins_claim: int = 1
