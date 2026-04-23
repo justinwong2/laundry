@@ -18,6 +18,7 @@ async function apiRequest<T>(
     headers: {
       'Content-Type': 'application/json',
       'X-Telegram-Init-Data': initData,
+      'ngrok-skip-browser-warning': 'true',
       ...options.headers,
     },
   })
@@ -72,10 +73,10 @@ export const api = {
 
   getMachine: (id: number) => apiRequest<Machine>(`/api/machines/${id}`),
 
-  claimMachine: (machineId: number, message?: string) =>
+  claimMachine: (machineId: number, message?: string, cycleDuration?: number) =>
     apiRequest<Session>('/api/sessions', {
       method: 'POST',
-      body: JSON.stringify({ machine_id: machineId, message }),
+      body: JSON.stringify({ machine_id: machineId, message, cycle_duration_minutes: cycleDuration }),
     }),
 
   releaseMachine: (sessionId: number) =>
@@ -95,9 +96,9 @@ export const api = {
 
   getTransactions: () => apiRequest<Transaction[]>('/api/users/me/transactions'),
 
-  pingMachine: (machineId: number) =>
+  pingMachine: (machineId: number, message?: string) =>
     apiRequest<{ success: boolean; message: string; new_balance: number }>(
       `/api/ping/${machineId}`,
-      { method: 'POST' }
+      { method: 'POST', body: message ? JSON.stringify({ message }) : undefined }
     ),
 }

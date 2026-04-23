@@ -9,6 +9,7 @@ interface ClaimModalProps {
 
 function ClaimModal({ machine, onClose }: ClaimModalProps) {
   const [message, setMessage] = useState('')
+  const [cycleDuration, setCycleDuration] = useState(machine.cycle_duration_minutes)
   const claimMutation = useClaimMachine()
 
   const handleClaim = async () => {
@@ -16,6 +17,7 @@ function ClaimModal({ machine, onClose }: ClaimModalProps) {
       await claimMutation.mutateAsync({
         machineId: machine.id,
         message: message || undefined,
+        cycleDuration: cycleDuration,
       })
       onClose()
     } catch (error) {
@@ -29,9 +31,16 @@ function ClaimModal({ machine, onClose }: ClaimModalProps) {
         <h2>
           Claim {machine.type === 'washer' ? 'Washer' : 'Dryer'} {machine.code}
         </h2>
-        <p className="cycle-info">
-          Cycle time: {machine.cycle_duration_minutes} minutes
-        </p>
+        <div className="form-group">
+          <label>Cycle Duration (minutes)</label>
+          <input
+            type="number"
+            min="1"
+            max="180"
+            value={cycleDuration}
+            onChange={(e) => setCycleDuration(Number(e.target.value))}
+          />
+        </div>
 
         <div className="form-group">
           <label>Message (optional)</label>

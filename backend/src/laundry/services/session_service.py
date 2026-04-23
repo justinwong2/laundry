@@ -18,7 +18,7 @@ class SessionService:
 
     @staticmethod
     async def claim(
-        telegram_id: int, machine_id: int, message: str | None = None
+        telegram_id: int, machine_id: int, message: str | None = None, cycle_duration_override: int | None = None
     ) -> dict:
         """Claim a machine for a user."""
         async with async_session() as session:
@@ -50,12 +50,13 @@ class SessionService:
                 raise HTTPException(status_code=400, detail="Machine is already in use")
 
             # Create session
+            duration = cycle_duration_override or machine.cycle_duration_minutes
             now = datetime.utcnow()
             laundry_session = LaundrySession(
                 user_id=user.id,
                 machine_id=machine_id,
                 started_at=now,
-                expected_end_at=now + timedelta(minutes=machine.cycle_duration_minutes),
+                expected_end_at=now + timedelta(minutes=duration),
                 message=message,
             )
             session.add(laundry_session)
@@ -106,6 +107,11 @@ class SessionService:
             if laundry_session.ended_at is not None:
                 raise HTTPException(
                     status_code=400, detail="Session already released"
+                )
+
+            if laundry_session.expected_end_at > datetime.utcnow():
+                raise HTTPException(
+                    status_code=400, detail="Cannot release machine before it finishes"
                 )
 
             # Release
@@ -161,7 +167,7 @@ class SessionService:
             ]
 
     @staticmethod
-    async def ping(telegram_id: int, machine_id: int) -> dict:
+    async def ping(telegram_id: int, machine_id: int, custom_message: str | None = None) -> dict:
         """Ping a machine's user."""
         async with async_session() as session:
             # Get pinger
@@ -235,6 +241,7 @@ class SessionService:
                     pinger.username or "Someone",
                     machine.code,
                     machine.type,
+                    custom_message,
                 )
                 await send_ping_received(owner.telegram_id, settings.coins_ping_receive)
             except Exception:

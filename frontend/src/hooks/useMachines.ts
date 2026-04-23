@@ -28,8 +28,8 @@ export function useClaimMachine() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ machineId, message }: { machineId: number; message?: string }) =>
-      api.claimMachine(machineId, message),
+    mutationFn: ({ machineId, message, cycleDuration }: { machineId: number; message?: string; cycleDuration?: number }) =>
+      api.claimMachine(machineId, message, cycleDuration),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['machines'] })
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
@@ -55,7 +55,8 @@ export function usePingMachine() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (machineId: number) => api.pingMachine(machineId),
+    mutationFn: ({ machineId, message }: { machineId: number; message?: string }) =>
+      api.pingMachine(machineId, message),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },

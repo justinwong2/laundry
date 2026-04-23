@@ -9,11 +9,15 @@ interface MachineCardProps {
 function MachineCard({ machine, onClick, isOwner }: MachineCardProps) {
   const session = machine.current_session
   const isAvailable = !session
-  const isDone = session && new Date(session.expected_end_at) < new Date()
+  const getUtcDate = (dateString: string) => {
+    return new Date(dateString.endsWith('Z') ? dateString : dateString + 'Z')
+  }
+
+  const isDone = session && getUtcDate(session.expected_end_at) < new Date()
 
   const getTimeRemaining = () => {
     if (!session) return null
-    const endTime = new Date(session.expected_end_at)
+    const endTime = getUtcDate(session.expected_end_at)
     const now = new Date()
     const diff = endTime.getTime() - now.getTime()
 
@@ -43,6 +47,11 @@ function MachineCard({ machine, onClick, isOwner }: MachineCardProps) {
         <>
           <div className="machine-user">@{session.username || 'user'}</div>
           <div className="machine-time">{getTimeRemaining()}</div>
+          {session.message && (
+            <div className="machine-message" style={{ fontSize: '0.8em', fontStyle: 'italic', marginTop: '4px', opacity: 0.8 }}>
+              "{session.message}"
+            </div>
+          )}
         </>
       )}
       {isOwner && <div className="owner-badge">You</div>}

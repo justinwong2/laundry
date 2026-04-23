@@ -4,7 +4,7 @@ import hashlib
 import hmac
 from urllib.parse import parse_qs
 
-from fastapi import Header, HTTPException
+from fastapi import Depends, Header, HTTPException
 
 from laundry.config import settings
 
@@ -57,23 +57,22 @@ def validate_init_data(init_data: str) -> dict:
     return json.loads(user_json)
 
 
-async def get_current_user_id(
+async def get_current_user_data(
     x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
-) -> int:
-    """
-    Dependency to extract and validate current user from initData header.
-
-    In debug mode, accepts 'dev:{user_id}' format for testing with Postman/curl.
-
-    Returns:
-        Telegram user ID
-    """
-    # Dev bypass for local testing (only when DEBUG=true)
+) -> dict:
+    """Dependency to extract full current user data from initData header."""
     if settings.debug and x_telegram_init_data.startswith("dev:"):
         try:
-            return int(x_telegram_init_data.split(":")[1])
+            user_id = int(x_telegram_init_data.split(":")[1])
+            return {"id": user_id, "username": f"dev_{user_id}", "first_name": "Dev", "last_name": "User"}
         except (IndexError, ValueError):
             raise HTTPException(status_code=401, detail="Invalid dev auth format")
+    
+    return validate_init_data(x_telegram_init_data)
 
-    user_data = validate_init_data(x_telegram_init_data)
+
+async def get_current_user_id(
+    user_data: dict = Depends(get_current_user_data),
+) -> int:
+    """Dependency to extract just the Telegram user ID."""
     return user_data["id"]

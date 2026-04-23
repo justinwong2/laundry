@@ -39,6 +39,7 @@ class SessionCreateRequest(BaseModel):
 
     machine_id: int
     message: str | None = None
+    cycle_duration_minutes: int | None = None
 
 
 class SessionResponse(BaseModel):
@@ -61,6 +62,12 @@ class TransactionResponse(BaseModel):
     amount: int
     reason: str
     created_at: datetime
+
+
+class PingRequest(BaseModel):
+    """Optional message for a ping."""
+
+    message: str | None = None
 
 
 class PingResponse(BaseModel):

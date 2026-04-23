@@ -2,9 +2,10 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from laundry.api.auth import get_current_user_id
+from laundry.api.auth import get_current_user_data, get_current_user_id
 from laundry.api.schemas import (
     MachineResponse,
+    PingRequest,
     PingResponse,
     SessionCreateRequest,
     SessionResponse,
@@ -43,7 +44,7 @@ async def claim_machine(
     request: SessionCreateRequest, telegram_id: int = Depends(get_current_user_id)
 ):
     """Claim a machine."""
-    return await SessionService.claim(telegram_id, request.machine_id, request.message)
+    return await SessionService.claim(telegram_id, request.machine_id, request.message, request.cycle_duration_minutes)
 
 
 @router.delete("/sessions/{session_id}", response_model=SessionResponse)
@@ -74,12 +75,16 @@ async def get_current_user(telegram_id: int = Depends(get_current_user_id)):
 
 @router.post("/users/register", response_model=UserResponse)
 async def register_user(
-    request: UserRegisterRequest, telegram_id: int = Depends(get_current_user_id)
+    request: UserRegisterRequest, user_data: dict = Depends(get_current_user_data)
 ):
     """Register new user."""
     from laundry.services.user_service import UserService
 
-    return await UserService.register(telegram_id, request.block)
+    return await UserService.register(
+        telegram_id=user_data["id"], 
+        block=request.block,
+        username=user_data.get("username")
+    )
 
 
 @router.get("/users/me/transactions", response_model=list[TransactionResponse])
@@ -91,7 +96,8 @@ async def get_my_transactions(telegram_id: int = Depends(get_current_user_id)):
 # Interactions
 @router.post("/ping/{machine_id}", response_model=PingResponse)
 async def ping_machine_user(
-    machine_id: int, telegram_id: int = Depends(get_current_user_id)
+    machine_id: int, request: PingRequest | None = None, telegram_id: int = Depends(get_current_user_id)
 ):
     """Ping a machine's user (costs coins)."""
-    return await SessionService.ping(telegram_id, machine_id)
+    msg = request.message if request else None
+    return await SessionService.ping(telegram_id, machine_id, msg)

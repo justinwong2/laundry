@@ -91,7 +91,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        settings.webapp_url,
+        "http://localhost:5173",
+        "https://023a-180-129-93-174.ngrok-free.app", # Direct reference to the frontend ngrok
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

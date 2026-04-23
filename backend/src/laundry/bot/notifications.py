@@ -33,14 +33,18 @@ async def send_ping_notification(
     pinger_username: str,
     machine_code: str,
     machine_type: str,
+    custom_message: str | None = None,
 ) -> None:
     """Send ping notification to machine owner."""
+    msg = f"@{pinger_username} is waiting for {machine_type.title()} {machine_code}."
+    if custom_message:
+        msg += f'\n\nThey say: "{custom_message}"'
+    else:
+        msg += " Please collect your laundry!"
+        
     await bot.send_message(
         chat_id=telegram_id,
-        text=(
-            f"@{pinger_username} is waiting for {machine_type.title()} {machine_code}. "
-            "Please collect your laundry!"
-        ),
+        text=msg,
     )
 
 

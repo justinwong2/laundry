@@ -30,7 +30,7 @@ async def seed_block_e_machines() -> None:
                     code=code,
                     type="washer",
                     block="E",
-                    cycle_duration_minutes=45,
+                    cycle_duration_minutes=30,
                     qr_code=f"E-WASHER-{code}",
                 )
             )
@@ -42,7 +42,7 @@ async def seed_block_e_machines() -> None:
                     code=code,
                     type="dryer",
                     block="E",
-                    cycle_duration_minutes=60,
+                    cycle_duration_minutes=30,
                     qr_code=f"E-DRYER-{code}",
                 )
             )

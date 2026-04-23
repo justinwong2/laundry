@@ -20,7 +20,8 @@ function MyMachines() {
   }
 
   const getTimeInfo = (session: { expected_end_at: string }) => {
-    const endTime = new Date(session.expected_end_at)
+    const endStr = session.expected_end_at;
+    const endTime = new Date(endStr.endsWith('Z') ? endStr : endStr + 'Z');
     const now = new Date()
     const diff = endTime.getTime() - now.getTime()
 
@@ -65,14 +66,11 @@ function MyMachines() {
                       {machine?.code}
                     </div>
                     <div className="time-remaining">{timeInfo.text}</div>
-                    {session.message && (
-                      <div className="session-message">"{session.message}"</div>
-                    )}
                   </div>
                   <button
                     className="btn-release"
                     onClick={() => handleRelease(session.id)}
-                    disabled={releaseMutation.isPending}
+                    disabled={releaseMutation.isPending || !timeInfo.isDone}
                   >
                     {releaseMutation.isPending ? 'Releasing...' : 'Release (+2 🪙)'}
                   </button>

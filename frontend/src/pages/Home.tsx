@@ -48,7 +48,7 @@ function Home() {
   return (
     <div className="home">
       <header className="header">
-        <h1>🧺 Block E Laundry</h1>
+        <h1>🧺 {profile ? `Block ${profile.block} Laundry` : 'Laundry'}</h1>
         <div className="coins">💰 {profile?.coins ?? 0} coins</div>
       </header>
 

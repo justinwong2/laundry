@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Machine } from '../api/client'
 import { usePingMachine } from '../hooks/useMachines'
 
@@ -8,6 +9,7 @@ interface PingModalProps {
 }
 
 function PingModal({ machine, userCoins, onClose }: PingModalProps) {
+  const [message, setMessage] = useState('')
   const pingMutation = usePingMachine()
   const session = machine.current_session
 
@@ -18,7 +20,7 @@ function PingModal({ machine, userCoins, onClose }: PingModalProps) {
     }
 
     try {
-      await pingMutation.mutateAsync(machine.id)
+      await pingMutation.mutateAsync({ machineId: machine.id, message: message || undefined })
       alert('Ping sent! The user has been notified.')
       onClose()
     } catch (error) {
@@ -43,6 +45,17 @@ function PingModal({ machine, userCoins, onClose }: PingModalProps) {
             )}
           </div>
         )}
+
+        <div className="form-group" style={{ marginTop: '16px', marginBottom: '16px' }}>
+          <label>Add a custom message (optional)</label>
+          <input
+            type="text"
+            placeholder="e.g., I'm waiting with wet clothes!"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            maxLength={100}
+          />
+        </div>
 
         <p className="ping-cost">
           Cost: <strong>3 🪙</strong> (you have {userCoins} 🪙)
