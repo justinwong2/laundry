@@ -23,8 +23,13 @@ router = APIRouter()
 # Machines
 @router.get("/machines", response_model=list[MachineResponse])
 async def list_machines(telegram_id: int = Depends(get_current_user_id)):
-    """List all machines with current status."""
-    return await MachineService.get_all_with_status()
+    """List machines for the user's block."""
+    from laundry.services.user_service import UserService
+
+    user = await UserService.get_by_telegram_id(telegram_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return await MachineService.get_all_with_status(block=user["block"])
 
 
 @router.get("/machines/{machine_id}", response_model=MachineResponse)

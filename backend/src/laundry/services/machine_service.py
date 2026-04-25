@@ -12,14 +12,19 @@ class MachineService:
     """Service for machine-related operations."""
 
     @staticmethod
-    async def get_all_with_status() -> list[dict]:
-        """Get all machines with their current session status."""
+    async def get_all_with_status(block: str | None = None) -> list[dict]:
+        """Get all machines with their current session status.
+
+        Args:
+            block: Filter machines by block (A, B, C, D, E). If None, returns all.
+        """
         async with async_session() as session:
-            result = await session.execute(
-                select(Machine).options(
-                    selectinload(Machine.sessions).selectinload(LaundrySession.user)
-                )
+            query = select(Machine).options(
+                selectinload(Machine.sessions).selectinload(LaundrySession.user)
             )
+            if block:
+                query = query.where(Machine.block == block)
+            result = await session.execute(query)
             machines = result.scalars().all()
 
             response = []
