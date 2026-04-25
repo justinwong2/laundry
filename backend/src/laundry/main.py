@@ -5,8 +5,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from telegram.ext import Application, CommandHandler
 
+from laundry.api.ratelimit import limiter, rate_limit_exceeded_handler
 from laundry.api.routes import router
 from laundry.bot.handlers import help_command, start_command
 from laundry.config import settings
@@ -89,6 +92,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Rate limiting: 20 requests per minute per client
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -104,8 +112,9 @@ app.include_router(router, prefix="/api")
 
 
 @app.get("/health")
+@limiter.exempt
 async def health_check():
-    """Health check endpoint."""
+    """Health check endpoint (exempt from rate limiting)."""
     return {"status": "healthy"}
 
 
