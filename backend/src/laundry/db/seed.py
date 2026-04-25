@@ -7,51 +7,90 @@ from sqlalchemy import select
 from laundry.db.database import async_session, init_db
 from laundry.models.machine import Machine
 
+BLOCKS = ["A", "B", "C", "D", "E"]
+MACHINE_CODES = ["A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2"]
 
-async def seed_block_e_machines() -> None:
-    """Seed Block E with 16 machines (8 washers + 8 dryers)."""
-    await init_db()
 
-    machine_codes = ["A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2"]
-    machines_to_add = []
+async def seed_block_machines(block: str) -> int:
+    """Seed a single block with 16 machines (8 washers + 8 dryers).
 
+    Returns the number of machines created.
+    """
     async with async_session() as session:
-        # Check if machines already exist
-        result = await session.execute(select(Machine).where(Machine.block == "E"))
+        # Check if machines already exist for this block
+        result = await session.execute(
+            select(Machine).where(Machine.block == block)
+        )
         existing = result.scalars().all()
         if existing:
-            print(f"Block E already has {len(existing)} machines. Skipping seed.")
-            return
+            print(f"Block {block} already has {len(existing)} machines. Skipping.")
+            return 0
+
+        machines_to_add = []
 
         # Create washers
-        for code in machine_codes:
+        for code in MACHINE_CODES:
             machines_to_add.append(
                 Machine(
                     code=code,
                     type="washer",
-                    block="E",
+                    block=block,
                     cycle_duration_minutes=30,
-                    qr_code=f"E-WASHER-{code}",
+                    qr_code=f"{block}-WASHER-{code}",
                 )
             )
 
         # Create dryers
-        for code in machine_codes:
+        for code in MACHINE_CODES:
             machines_to_add.append(
                 Machine(
                     code=code,
                     type="dryer",
-                    block="E",
+                    block=block,
                     cycle_duration_minutes=30,
-                    qr_code=f"E-DRYER-{code}",
+                    qr_code=f"{block}-DRYER-{code}",
                 )
             )
 
         session.add_all(machines_to_add)
         await session.commit()
 
-        print(f"Seeded {len(machines_to_add)} machines for Block E")
+        print(f"Seeded {len(machines_to_add)} machines for Block {block}")
+        return len(machines_to_add)
+
+
+async def seed_all_blocks() -> None:
+    """Seed all blocks (A-E) with machines."""
+    await init_db()
+
+    total = 0
+    for block in BLOCKS:
+        total += await seed_block_machines(block)
+
+    print(f"\nTotal: {total} machines seeded across {len(BLOCKS)} blocks")
+
+
+async def seed_block_e_machines() -> None:
+    """Seed Block E only (for backwards compatibility)."""
+    await init_db()
+    await seed_block_machines("E")
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_block_e_machines())
+    import sys
+
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].upper()
+        if arg == "ALL":
+            asyncio.run(seed_all_blocks())
+        elif arg in BLOCKS:
+            asyncio.run(init_db())
+            asyncio.run(seed_block_machines(arg))
+        else:
+            print("Usage: python -m laundry.db.seed [BLOCK|ALL]")
+            print(f"  BLOCK: One of {BLOCKS}")
+            print("  ALL: Seed all blocks")
+            sys.exit(1)
+    else:
+        # Default: seed all blocks
+        asyncio.run(seed_all_blocks())
