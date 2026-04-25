@@ -13,24 +13,32 @@ A Telegram Mini App + Bot for shared laundry room management with gamification.
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      USER                               │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          ▼               ▼               ▼
-   ┌─────────────┐  ┌───────────┐  ┌─────────────┐
-   │ Mini App    │  │ QR Scan   │  │ Bot Chat    │
-   │ (main UI)   │  │ (claim)   │  │ (notifs)    │
-   └──────┬──────┘  └─────┬─────┘  └──────┬──────┘
-          │               │               │
-          └───────────────┼───────────────┘
-                          ▼
-              ┌───────────────────────┐
-              │   FastAPI Backend     │
-              │   (Python + SQLite)   │
-              └───────────────────────┘
+                        INTERNET
+                            |
+            +---------------+---------------+
+            |                               |
+            v                               v
+    +---------------+               +---------------+
+    |  CloudFront   |               |     Nginx     |
+    |    (CDN)      |               |   (HTTPS)     |
+    +-------+-------+               +-------+-------+
+            |                               |
+            v                               v
+    +---------------+               +---------------+
+    |   S3 Bucket   |               |   Uvicorn     |
+    | (React App)   |               |  (FastAPI)    |
+    +---------------+               +-------+-------+
+                                            |
+                                            v
+                                    +---------------+
+                                    |    SQLite     |
+                                    +---------------+
 ```
+
+| Component | Service | URL |
+|-----------|---------|-----|
+| Frontend | S3 + CloudFront | `https://dsr52s967fixv.cloudfront.net` |
+| Backend API | EC2 + Nginx | `https://sheares-laundry-api.mooo.com` |
 
 ## Project Structure
 
@@ -52,63 +60,27 @@ laundry/
         └── pages/        # Page components
 ```
 
-## Setup
+## Deployment
 
-### Prerequisites
-
-- Python 3.11+
-- Node.js 18+
-- Telegram Bot Token (from @BotFather)
-
-### Backend
-
-```bash
-cd backend
-
-# Create virtual environment
-uv venv
-# Windows:
-.venv\Scripts\Activate.ps1
-# macOS/Linux:
-source .venv/bin/activate
-
-# Install dependencies
-uv pip install -e ".[dev]"
-
-# Copy environment template
-cp .env.example .env
-# Edit .env with your bot token
-
-# Seed database with Block E machines
-python -m laundry.db.seed
-
-# Run server
-uvicorn laundry.main:app --reload
-```
-
-### Frontend
+### Frontend (S3 + CloudFront)
 
 ```bash
 cd frontend
-
-# Install dependencies
-npm install
-
-# Copy environment template
-cp .env.example .env
-# Edit .env with your API URL
-
-# Run dev server
-npm run dev
+npm run build
+aws s3 sync dist/ s3://sheares-laundry-bot-frontend --delete
+aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "/*"
 ```
 
-### QR Codes
-
-Generate QR codes for machines:
+### Backend (EC2)
 
 ```bash
-cd backend
-python scripts/generate_qr.py https://your-app.vercel.app
+# SSH into EC2
+ssh -i "laundry-bot-key.pem" ubuntu@EC2_IP
+
+# Pull and restart
+cd ~/laundry
+git pull
+sudo systemctl restart laundrybot
 ```
 
 ## Development
@@ -135,18 +107,6 @@ npm run lint
 # Build
 npm run build
 ```
-
-## Deployment
-
-### Backend
-- Deploy to any Python hosting (Railway, Render, etc.)
-- Set environment variables
-- Run `python -m laundry.db.seed` to initialize machines
-
-### Frontend
-- Deploy to Vercel/Netlify
-- Set `VITE_API_URL` to your backend URL
-- Configure as Telegram Web App in BotFather
 
 ## Coin Economy
 
