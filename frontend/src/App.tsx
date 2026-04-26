@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useTelegram } from './hooks/useTelegram'
 import { useProfile } from './hooks/useMachines'
@@ -13,15 +13,15 @@ function App() {
   const { webApp, user, startParam } = useTelegram()
   const { data: profile, isLoading, error } = useProfile()
 
-  // Parse force release from startParam (e.g., "force_E-WASHER-A1")
-  const initialForceReleaseQrCode = startParam?.startsWith('force_')
-    ? startParam.substring(6) // Remove "force_" prefix
-    : null
-
   // Use state so we can clear it when user navigates home
-  const [forceReleaseQrCode, setForceReleaseQrCode] = useState<string | null>(
-    initialForceReleaseQrCode
-  )
+  const [forceReleaseQrCode, setForceReleaseQrCode] = useState<string | null>(null)
+
+  // Sync state when startParam becomes available (after Telegram SDK initializes)
+  useEffect(() => {
+    if (startParam?.startsWith('force_')) {
+      setForceReleaseQrCode(startParam.substring(6))
+    }
+  }, [startParam])
 
   if (!webApp || !user) {
     return (
