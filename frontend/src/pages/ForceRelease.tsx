@@ -88,8 +88,9 @@ function ForceRelease({ qrCode, onGoHome }: ForceReleaseProps) {
     )
   }
 
-  // Calculate time remaining
-  const endTime = new Date(session.expected_end_at)
+  // Calculate time remaining (append 'Z' to parse as UTC if not already present)
+  const endStr = session.expected_end_at
+  const endTime = new Date(endStr.endsWith('Z') ? endStr : endStr + 'Z')
   const now = new Date()
   const minutesRemaining = Math.max(0, Math.round((endTime.getTime() - now.getTime()) / 60000))
   const isDone = minutesRemaining === 0
