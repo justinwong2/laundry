@@ -5,6 +5,7 @@ import { useProfile } from './hooks/useMachines'
 import Home from './pages/Home'
 import MyMachines from './pages/MyMachines'
 import Profile from './pages/Profile'
+import Powerups from './pages/Powerups'
 import ForceRelease from './pages/ForceRelease'
 import Navigation from './components/Navigation'
 import Register from './pages/Register'
@@ -63,6 +64,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/my-machines" element={<MyMachines />} />
+          <Route path="/powerups" element={<Powerups />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
         <Navigation />

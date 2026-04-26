@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from laundry.db.database import Base
 
 if TYPE_CHECKING:
+    from laundry.models.powerup import UserPowerup
     from laundry.models.session import CoinTransaction, LaundrySession
 
 
@@ -28,3 +29,4 @@ class User(Base):
         back_populates="user", foreign_keys="LaundrySession.user_id"
     )
     transactions: Mapped[list["CoinTransaction"]] = relationship(back_populates="user")
+    powerups: Mapped[list["UserPowerup"]] = relationship(back_populates="user")

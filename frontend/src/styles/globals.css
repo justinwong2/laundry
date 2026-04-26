@@ -837,3 +837,260 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POWERUPS PAGE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.powerups .section-title {
+  font-family: var(--font-arcade);
+  font-size: 0.5rem;
+  color: var(--primary);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Shop Section */
+.powerup-shop {
+  margin-bottom: 32px;
+}
+
+.powerup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.powerup-card {
+  background: var(--black-lighter);
+  border: 2px solid var(--gray-dark);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.powerup-card:hover {
+  border-color: var(--primary);
+}
+
+.powerup-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.powerup-name {
+  font-family: var(--font-arcade);
+  font-size: 0.45rem;
+  color: var(--white);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.powerup-description {
+  font-family: var(--font-terminal);
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.powerup-cost {
+  font-family: var(--font-arcade);
+  font-size: 0.4rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.powerup-owned {
+  font-family: var(--font-arcade);
+  font-size: 0.35rem;
+  color: var(--available);
+  margin-bottom: 8px;
+}
+
+.btn-buy {
+  width: 100%;
+  padding: 10px;
+  font-family: var(--font-arcade);
+  font-size: 0.4rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--primary);
+  color: var(--black);
+  border: 2px solid var(--primary-dark);
+}
+
+.btn-buy:hover:not(.disabled) {
+  background: var(--primary-light);
+}
+
+.btn-buy.disabled {
+  background: var(--gray-dark);
+  color: var(--gray);
+  border-color: var(--gray-dark);
+  cursor: not-allowed;
+}
+
+/* Inventory Section */
+.powerup-inventory {
+  background: var(--black-lighter);
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid var(--gray-dark);
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.inventory-item {
+  background: var(--black);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.item-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.item-name {
+  font-family: var(--font-arcade);
+  font-size: 0.3rem;
+  color: var(--white);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.item-quantity {
+  font-family: var(--font-arcade);
+  font-size: 0.4rem;
+  color: var(--primary);
+}
+
+.inventory-hint {
+  font-family: var(--font-terminal);
+  font-size: 0.9rem;
+  color: var(--gray);
+  text-align: center;
+}
+
+/* Empty state for inventory */
+.powerup-inventory .empty-state {
+  padding: 24px;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.empty-text {
+  font-family: var(--font-arcade);
+  font-size: 0.45rem;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-family: var(--font-terminal);
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POWERUPS IN PING MODAL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.ping-section {
+  margin-bottom: 16px;
+}
+
+.powerup-section {
+  padding-top: 16px;
+}
+
+.powerup-divider {
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.powerup-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gray-dark);
+}
+
+.powerup-divider span {
+  font-family: var(--font-arcade);
+  font-size: 0.35rem;
+  color: var(--gray);
+  background: var(--black-light);
+  padding: 0 12px;
+  position: relative;
+}
+
+.powerup-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.btn-powerup {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-arcade);
+  font-size: 0.45rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.btn-powerup.spam-bomb {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: var(--white);
+  border: 2px solid #a93226;
+}
+
+.btn-powerup.spam-bomb:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
+}
+
+.btn-powerup.name-shame {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: var(--white);
+  border: 2px solid #7d3c98;
+}
+
+.btn-powerup.name-shame:hover:not(:disabled) {
+  background: linear-gradient(135deg, #af7ac5 0%, #9b59b6 100%);
+}
+
+.btn-powerup:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.powerup-hint {
+  font-family: var(--font-terminal);
+  font-size: 0.85rem;
+  color: var(--gray);
+  text-align: center;
+}

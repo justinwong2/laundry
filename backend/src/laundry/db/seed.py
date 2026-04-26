@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from laundry.db.database import async_session, init_db
 from laundry.models.machine import Machine
+from laundry.models.powerup import Powerup
 
 BLOCKS = ["A", "B", "C", "D", "E"]
 MACHINE_CODES = ["A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2"]
@@ -59,6 +60,47 @@ async def seed_block_machines(block: str) -> int:
         return len(machines_to_add)
 
 
+async def seed_powerups() -> int:
+    """
+    Seed powerup definitions.
+
+    These are the "products" in the shop - what users can buy.
+    The actual inventory (who owns what) is stored in user_powerups table.
+
+    Returns the number of powerups created.
+    """
+    async with async_session() as session:
+        # Check if already seeded
+        result = await session.execute(select(Powerup))
+        existing = result.scalars().all()
+        if existing:
+            print(f"Powerups already seeded ({len(existing)} found). Skipping.")
+            return 0
+
+        powerups = [
+            Powerup(
+                type="spam_bomb",
+                name="Spam Bomb",
+                description="Send 20 notification messages to the machine owner over 1 minute! Maximum annoyance guaranteed.",
+                cost=20,
+                icon="💣",
+            ),
+            Powerup(
+                type="name_shame",
+                name="Name & Shame",
+                description="Post a public message to the group chat calling out the laundry hoarder!",
+                cost=40,
+                icon="📢",
+            ),
+        ]
+
+        session.add_all(powerups)
+        await session.commit()
+
+        print(f"Seeded {len(powerups)} powerups")
+        return len(powerups)
+
+
 async def seed_all_blocks() -> None:
     """Seed all blocks (A-E) with machines."""
     await init_db()
@@ -69,11 +111,15 @@ async def seed_all_blocks() -> None:
 
     print(f"\nTotal: {total} machines seeded across {len(BLOCKS)} blocks")
 
+    # Also seed powerups
+    await seed_powerups()
+
 
 async def seed_block_e_machines() -> None:
     """Seed Block E only (for backwards compatibility)."""
     await init_db()
     await seed_block_machines("E")
+    await seed_powerups()  # Also seed powerups
 
 
 if __name__ == "__main__":

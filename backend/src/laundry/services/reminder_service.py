@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import select
 
-from laundry.bot.notifications import send_done_notification, send_reminder
+from laundry.bot.notifications import send_done_notification, send_reminder, send_spam_bomb_message
 from laundry.config import settings
 from laundry.db.database import async_session
 from laundry.models.machine import Machine
+from laundry.models.powerup import SpamBombJob
 from laundry.models.session import LaundrySession
 from laundry.models.user import User
 
@@ -94,10 +95,72 @@ async def check_done_notifications() -> None:
         await session.commit()
 
 
+async def process_spam_bombs() -> None:
+    """
+    Process active spam bomb jobs.
+
+    This runs every 15 seconds. For each active job:
+    1. Send a batch of messages (up to batch_size)
+    2. Update the messages_sent counter
+    3. Mark as completed when all messages sent
+
+    This is a "job queue" pattern - work is queued in the database
+    and processed incrementally by a background worker.
+    """
+    async with async_session() as session:
+        # Get all incomplete spam bomb jobs
+        result = await session.execute(
+            select(SpamBombJob).where(SpamBombJob.completed_at.is_(None))
+        )
+        active_jobs = result.scalars().all()
+
+        for job in active_jobs:
+            # Calculate how many messages to send this batch
+            remaining = job.messages_total - job.messages_sent
+            batch_size = min(settings.powerup_spam_bomb_batch_size, remaining)
+
+            # Get machine info for the message
+            machine_result = await session.execute(
+                select(Machine).where(Machine.id == job.machine_id)
+            )
+            machine = machine_result.scalar_one_or_none()
+
+            # Get sender info
+            user_result = await session.execute(
+                select(User).where(User.id == job.user_id)
+            )
+            sender = user_result.scalar_one_or_none()
+
+            # Send batch of messages
+            for i in range(batch_size):
+                try:
+                    await send_spam_bomb_message(
+                        job.target_telegram_id,
+                        sender.username if sender else "Someone",
+                        machine.code if machine else "Unknown",
+                        machine.type if machine else "machine",
+                        job.messages_sent + i + 1,  # Current message number
+                        job.messages_total,
+                    )
+                except Exception:
+                    pass  # Fire-and-forget: continue even if one message fails
+
+            # Update progress
+            job.messages_sent += batch_size
+
+            # Mark complete if done
+            if job.messages_sent >= job.messages_total:
+                job.completed_at = datetime.utcnow()
+
+        await session.commit()
+
+
 def start_scheduler() -> None:
     """Start the reminder scheduler."""
     scheduler.add_job(check_reminders, "interval", minutes=1)
     scheduler.add_job(check_done_notifications, "interval", minutes=1)
+    # Spam bomb runs every 15 seconds (sends 5 messages per batch = 20 msgs in 1 minute)
+    scheduler.add_job(process_spam_bombs, "interval", seconds=15)
     scheduler.start()
 
 

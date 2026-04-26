@@ -84,3 +84,67 @@ class ForceReleaseResponse(BaseModel):
     success: bool
     message: str
     previous_owner_notified: bool
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POWERUP SCHEMAS
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class PowerupResponse(BaseModel):
+    """
+    Powerup definition for the shop.
+
+    This is the "product listing" - shows what's available to buy.
+    """
+
+    id: int
+    type: str  # "spam_bomb" or "name_shame"
+    name: str  # "Spam Bomb"
+    description: str  # Shown in shop UI
+    cost: int  # Price in coins
+    icon: str  # Emoji: "💣"
+
+
+class UserPowerupResponse(BaseModel):
+    """
+    User's inventory item.
+
+    Shows what the user owns and how many.
+    """
+
+    id: int
+    powerup_id: int
+    powerup_type: str
+    powerup_name: str
+    powerup_icon: str
+    quantity: int
+
+
+class BuyPowerupRequest(BaseModel):
+    """Request to buy a powerup."""
+
+    powerup_type: str  # "spam_bomb" or "name_shame"
+
+
+class BuyPowerupResponse(BaseModel):
+    """Response after buying a powerup."""
+
+    success: bool
+    message: str
+    new_balance: int  # Updated coin balance
+    quantity: int  # How many of this type user now has
+
+
+class UsePowerupRequest(BaseModel):
+    """Request to use a powerup on a machine."""
+
+    machine_id: int  # Target machine with active session
+
+
+class UsePowerupResponse(BaseModel):
+    """Response after using a powerup."""
+
+    success: bool
+    message: str
+    job_id: int | None = None  # Only for spam bomb (tracking ID)

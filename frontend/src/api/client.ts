@@ -68,6 +68,41 @@ export interface Transaction {
   created_at: string
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POWERUP TYPES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface Powerup {
+  id: number
+  type: string // "spam_bomb" | "name_shame"
+  name: string // "Spam Bomb"
+  description: string // Shown in shop UI
+  cost: number // Price in coins
+  icon: string // Emoji: "💣"
+}
+
+export interface UserPowerup {
+  id: number
+  powerup_id: number
+  powerup_type: string
+  powerup_name: string
+  powerup_icon: string
+  quantity: number
+}
+
+export interface BuyPowerupResponse {
+  success: boolean
+  message: string
+  new_balance: number
+  quantity: number
+}
+
+export interface UsePowerupResponse {
+  success: boolean
+  message: string
+  job_id?: number // Only for spam bomb
+}
+
 export const api = {
   getMachines: () => apiRequest<Machine[]>('/api/machines'),
 
@@ -107,4 +142,35 @@ export const api = {
       `/api/machines/${qrCode}/force-release`,
       { method: 'POST' }
     ),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POWERUPS
+  // ────────────────────────────────────────────────────���────────────────────
+
+  /** Get all available powerups for the shop */
+  getPowerups: () => apiRequest<Powerup[]>('/api/powerups'),
+
+  /** Get user's powerup inventory */
+  getInventory: () => apiRequest<UserPowerup[]>('/api/powerups/inventory'),
+
+  /** Buy a powerup */
+  buyPowerup: (powerupType: string) =>
+    apiRequest<BuyPowerupResponse>('/api/powerups/buy', {
+      method: 'POST',
+      body: JSON.stringify({ powerup_type: powerupType }),
+    }),
+
+  /** Use spam bomb on a machine */
+  useSpamBomb: (machineId: number) =>
+    apiRequest<UsePowerupResponse>('/api/powerups/use/spam-bomb', {
+      method: 'POST',
+      body: JSON.stringify({ machine_id: machineId }),
+    }),
+
+  /** Use name & shame on a machine */
+  useNameShame: (machineId: number) =>
+    apiRequest<UsePowerupResponse>('/api/powerups/use/name-shame', {
+      method: 'POST',
+      body: JSON.stringify({ machine_id: machineId }),
+    }),
 }
