@@ -226,6 +226,17 @@ body {
   color: var(--white);
 }
 
+.machine-message {
+  font-size: 0.65rem;
+  font-style: italic;
+  margin-top: 4px;
+  opacity: 0.8;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .owner-badge {
   position: absolute;
   top: 2px;
@@ -280,7 +291,7 @@ body {
   background: var(--black-light);
   border-top: 3px solid var(--primary);
   padding: 8px 0;
-  padding-bottom: env(safe-area-inset-bottom, 8px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 8px) + 12px);
 }
 
 .navigation a {
@@ -654,8 +665,8 @@ body {
 }
 
 .register-page .btn-primary {
-  width: 100%;
-  max-width: 300px;
+  width: auto;
+  padding: 12px 48px;
 }
 
 /* Force Release Page */

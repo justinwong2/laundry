@@ -49,7 +49,7 @@ function ClaimModal({ machine, onClose }: ClaimModalProps) {
             placeholder="e.g., Please move to dryer when done"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            maxLength={200}
+            maxLength={50}
           />
         </div>
 

@@ -48,7 +48,7 @@ function MachineCard({ machine, onClick, isOwner }: MachineCardProps) {
           <div className="machine-user">@{session.username || 'user'}</div>
           <div className="machine-time">{getTimeRemaining()}</div>
           {session.message && (
-            <div className="machine-message" style={{ fontSize: '0.8em', fontStyle: 'italic', marginTop: '4px', opacity: 0.8 }}>
+            <div className="machine-message">
               "{session.message}"
             </div>
           )}
