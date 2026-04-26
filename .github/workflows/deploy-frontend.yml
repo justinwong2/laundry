@@ -28,6 +28,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: frontend
+        env:
+          VITE_API_URL: https://sheares-laundry-api.mooo.com
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
