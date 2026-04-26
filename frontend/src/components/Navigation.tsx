@@ -15,7 +15,7 @@ function Navigation() {
         <span className="label">MINE</span>
       </NavLink>
       <NavLink to="/powerups" className={({ isActive }) => (isActive ? 'active' : '')}>
-        <span className="icon">💣</span>
+        <span className="icon">[$]</span>
         <span className="label">SHOP</span>
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
