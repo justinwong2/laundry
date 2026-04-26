@@ -313,9 +313,7 @@ class PowerupService:
             try:
                 await send_shame_message(
                     target.username or "Anonymous",
-                    machine.code,
-                    machine.type,
-                    user.username or "Anonymous",
+                    target.block or "?",
                 )
             except Exception as e:
                 # Fire-and-forget pattern: log error but don't fail the request

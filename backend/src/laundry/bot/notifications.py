@@ -109,11 +109,16 @@ async def send_spam_bomb_message(
     await bot.send_message(chat_id=telegram_id, text=text)
 
 
+def _escape_markdown(text: str) -> str:
+    """Escape special Markdown characters in text."""
+    for char in ["_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!"]:
+        text = text.replace(char, f"\\{char}")
+    return text
+
+
 async def send_shame_message(
     target_username: str,
-    machine_code: str,
-    machine_type: str,
-    shamer_username: str,
+    target_block: str,
 ) -> None:
     """
     Post a name and shame message to the configured group chat.
@@ -121,13 +126,22 @@ async def send_shame_message(
     This is a PUBLIC message - sent to the group, not as a DM.
     The group ID comes from settings (environment variable).
     """
-    text = (
-        f"📢 **NAME AND SHAME** 📢\n\n"
-        f"@{target_username} has been called out by @{shamer_username}!\n\n"
-        f"Their laundry in {machine_type.title()} {machine_code} is done "
-        f"but they haven't collected it yet.\n\n"
-        f"Please be considerate and collect your laundry promptly! 🧺"
-    )
+    import random
+
+    # Escape usernames to handle special characters like underscores
+    safe_target = _escape_markdown(target_username)
+
+    # Randomly pick a shame message
+    messages = [
+        f"@{safe_target} from Block {target_block} eh your laundry still inside, faster come take lah",
+        f"@{safe_target} from Block {target_block} hellooo your laundry waiting for you since damn long alr 😭",
+        f"@{safe_target} from Block {target_block} faster come take your laundry can or not, other people also need use 😅",
+        f"@{safe_target} Block {target_block} your laundry dry until can collect grandchildren alr, faster come",
+        f"@{safe_target} from Block {target_block} hello your clothes calling you, please respond asap",
+        f"@{safe_target} Block {target_block} oi your laundry waiting until going to pass away already come now",
+    ]
+
+    text = f"📢 **NAME AND SHAME** 📢\n\n{random.choice(messages)}"
 
     await bot.send_message(
         chat_id=settings.telegram_shame_group_id,
