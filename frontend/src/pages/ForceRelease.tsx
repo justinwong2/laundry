@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useMachines, useForceRelease } from '../hooks/useMachines'
 
 interface ForceReleaseProps {
   qrCode: string
+  onGoHome: () => void
 }
 
-function ForceRelease({ qrCode }: ForceReleaseProps) {
-  const navigate = useNavigate()
+function ForceRelease({ qrCode, onGoHome }: ForceReleaseProps) {
   const { data: machines, isLoading } = useMachines()
   const forceReleaseMutation = useForceRelease()
   const [confirmed, setConfirmed] = useState(false)
@@ -33,10 +32,6 @@ function ForceRelease({ qrCode }: ForceReleaseProps) {
     }
   }
 
-  const handleGoHome = () => {
-    navigate('/')
-  }
-
   if (isLoading) {
     return (
       <div className="force-release-page">
@@ -51,7 +46,7 @@ function ForceRelease({ qrCode }: ForceReleaseProps) {
         <div className="error-card">
           <h2>Machine Not Found</h2>
           <p>Could not find machine with code: {qrCode}</p>
-          <button className="btn-primary" onClick={handleGoHome}>
+          <button className="btn-primary" onClick={onGoHome}>
             Go to Home
           </button>
         </div>
@@ -66,7 +61,7 @@ function ForceRelease({ qrCode }: ForceReleaseProps) {
         <div className={`result-card ${result.success ? 'success' : 'error'}`}>
           <h2>{result.success ? 'Machine Released' : 'Release Failed'}</h2>
           <p>{result.message}</p>
-          <button className="btn-primary" onClick={handleGoHome}>
+          <button className="btn-primary" onClick={onGoHome}>
             Go to Home
           </button>
         </div>
@@ -85,7 +80,7 @@ function ForceRelease({ qrCode }: ForceReleaseProps) {
           <h2>{machineLabel}</h2>
           <p className="status available">Available</p>
           <p>This machine is not currently in use. No action needed.</p>
-          <button className="btn-primary" onClick={handleGoHome}>
+          <button className="btn-primary" onClick={onGoHome}>
             Go to Home
           </button>
         </div>
@@ -123,7 +118,7 @@ function ForceRelease({ qrCode }: ForceReleaseProps) {
 
         {!confirmed ? (
           <div className="actions">
-            <button className="btn-secondary" onClick={handleGoHome}>
+            <button className="btn-secondary" onClick={onGoHome}>
               Cancel
             </button>
             <button className="btn-warning" onClick={() => setConfirmed(true)}>

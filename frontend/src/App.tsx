@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useTelegram } from './hooks/useTelegram'
 import { useProfile } from './hooks/useMachines'
@@ -13,9 +14,14 @@ function App() {
   const { data: profile, isLoading, error } = useProfile()
 
   // Parse force release from startParam (e.g., "force_E-WASHER-A1")
-  const forceReleaseQrCode = startParam?.startsWith('force_')
+  const initialForceReleaseQrCode = startParam?.startsWith('force_')
     ? startParam.substring(6) // Remove "force_" prefix
     : null
+
+  // Use state so we can clear it when user navigates home
+  const [forceReleaseQrCode, setForceReleaseQrCode] = useState<string | null>(
+    initialForceReleaseQrCode
+  )
 
   if (!webApp || !user) {
     return (
@@ -38,12 +44,14 @@ function App() {
   }
 
   // If opened via force release QR code, show force release page
-  // .
   if (forceReleaseQrCode) {
     return (
       <BrowserRouter>
         <div className="app">
-          <ForceRelease qrCode={forceReleaseQrCode} />
+          <ForceRelease
+            qrCode={forceReleaseQrCode}
+            onGoHome={() => setForceReleaseQrCode(null)}
+          />
         </div>
       </BrowserRouter>
     )
