@@ -81,14 +81,14 @@ async def seed_powerups() -> int:
             Powerup(
                 type="spam_bomb",
                 name="Spam Bomb",
-                description="Send 20 notification messages to the machine owner over 1 minute! Maximum annoyance guaranteed.",
+                description="Send 20 messages over 1 minute!",
                 cost=20,
                 icon="💣",
             ),
             Powerup(
                 type="name_shame",
                 name="Name & Shame",
-                description="Post a public message to the group chat calling out the laundry hoarder!",
+                description="Post to the group chat calling them out!",
                 cost=40,
                 icon="📢",
             ),

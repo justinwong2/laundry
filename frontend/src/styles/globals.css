@@ -857,8 +857,8 @@ body {
 }
 
 .powerup-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -866,9 +866,12 @@ body {
   background: var(--black-lighter);
   border: 2px solid var(--gray-dark);
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   text-align: center;
   transition: all 0.15s ease;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
 }
 
 .powerup-card:hover {
@@ -876,45 +879,46 @@ body {
 }
 
 .powerup-icon {
-  font-size: 2.5rem;
-  margin-bottom: 8px;
+  font-size: 1.8rem;
+  margin-bottom: 6px;
 }
 
 .powerup-name {
   font-family: var(--font-arcade);
-  font-size: 0.45rem;
+  font-size: 0.4rem;
   color: var(--white);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.4;
 }
 
 .powerup-description {
   font-family: var(--font-terminal);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--gray);
-  margin-bottom: 12px;
-  line-height: 1.4;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  flex-grow: 1;
 }
 
 .powerup-cost {
   font-family: var(--font-arcade);
-  font-size: 0.4rem;
+  font-size: 0.35rem;
   color: var(--primary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .powerup-owned {
   font-family: var(--font-arcade);
-  font-size: 0.35rem;
+  font-size: 0.3rem;
   color: var(--available);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .btn-buy {
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   font-family: var(--font-arcade);
-  font-size: 0.4rem;
+  font-size: 0.35rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -922,6 +926,7 @@ body {
   background: var(--primary);
   color: var(--black);
   border: 2px solid var(--primary-dark);
+  margin-top: auto;
 }
 
 .btn-buy:hover:not(.disabled) {
