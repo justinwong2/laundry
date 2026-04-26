@@ -54,3 +54,19 @@ async def send_ping_received(telegram_id: int, amount: int) -> None:
         chat_id=telegram_id,
         text=f"You received {amount} coin(s) as compensation for being pinged.",
     )
+
+
+async def send_force_release_notification(
+    telegram_id: int,
+    releaser_username: str,
+    machine_code: str,
+    machine_type: str,
+) -> None:
+    """Notify original owner their session was force-released."""
+    await bot.send_message(
+        chat_id=telegram_id,
+        text=(
+            f"Your session on {machine_type.title()} {machine_code} was force-released "
+            f"by @{releaser_username}. Please collect your laundry if you haven't already."
+        ),
+    )

@@ -76,3 +76,11 @@ class PingResponse(BaseModel):
     success: bool
     message: str
     new_balance: int
+
+
+class ForceReleaseResponse(BaseModel):
+    """Response after force-releasing a machine."""
+
+    success: bool
+    message: str
+    previous_owner_notified: bool

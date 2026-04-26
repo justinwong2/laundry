@@ -24,5 +24,7 @@ class User(Base):
     coins: Mapped[int] = mapped_column(Integer, default=10)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    sessions: Mapped[list["LaundrySession"]] = relationship(back_populates="user")
+    sessions: Mapped[list["LaundrySession"]] = relationship(
+        back_populates="user", foreign_keys="LaundrySession.user_id"
+    )
     transactions: Mapped[list["CoinTransaction"]] = relationship(back_populates="user")

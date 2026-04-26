@@ -63,6 +63,18 @@ export function usePingMachine() {
   })
 }
 
+export function useForceRelease() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (qrCode: string) => api.forceReleaseMachine(qrCode),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['machines'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+    },
+  })
+}
+
 export function useProfile() {
   return useQuery({
     queryKey: ['profile'],

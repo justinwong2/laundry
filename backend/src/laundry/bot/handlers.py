@@ -32,7 +32,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     await update.message.reply_text(
         f"Welcome to Laundry Bot, {user.first_name}!\n\n"
-        "Track laundry machines, get reminders, and never miss your laundry again.\n\n"
+        "Track laundry machines, get reminders and see who is using the machines.\n\n"
         "Tap the button below to open the Laundry Room:" + suffix,
         reply_markup=reply_markup,
     )

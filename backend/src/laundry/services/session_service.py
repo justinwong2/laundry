@@ -252,3 +252,75 @@ class SessionService:
                 "message": "Ping sent successfully",
                 "new_balance": pinger.coins,
             }
+
+    @staticmethod
+    async def force_release(telegram_id: int, qr_code: str) -> dict:
+        """Force release a machine by QR code. Any authenticated user can do this."""
+        async with async_session() as session:
+            # Get the user performing the force release
+            result = await session.execute(
+                select(User).where(User.telegram_id == telegram_id)
+            )
+            releaser = result.scalar_one_or_none()
+            if not releaser:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            # Find machine by qr_code
+            result = await session.execute(
+                select(Machine).where(Machine.qr_code == qr_code)
+            )
+            machine = result.scalar_one_or_none()
+            if not machine:
+                raise HTTPException(status_code=404, detail="Machine not found")
+
+            # Find active session on this machine
+            result = await session.execute(
+                select(LaundrySession).where(
+                    LaundrySession.machine_id == machine.id,
+                    LaundrySession.ended_at.is_(None),
+                )
+            )
+            laundry_session = result.scalar_one_or_none()
+            if not laundry_session:
+                return {
+                    "success": False,
+                    "message": "Machine is not currently in use",
+                    "previous_owner_notified": False,
+                }
+
+            # Get the original owner for notification
+            result = await session.execute(
+                select(User).where(User.id == laundry_session.user_id)
+            )
+            owner = result.scalar_one_or_none()
+
+            # Mark as force released
+            now = datetime.utcnow()
+            laundry_session.ended_at = now
+            laundry_session.force_released = True
+            laundry_session.force_released_by = releaser.id
+            laundry_session.force_released_at = now
+
+            await session.commit()
+
+            # Notify original owner (fire and forget)
+            owner_notified = False
+            if owner and owner.id != releaser.id:
+                from laundry.bot.notifications import send_force_release_notification
+
+                try:
+                    await send_force_release_notification(
+                        owner.telegram_id,
+                        releaser.username or "Someone",
+                        machine.code,
+                        machine.type,
+                    )
+                    owner_notified = True
+                except Exception:
+                    pass  # Don't fail if notification fails
+
+            return {
+                "success": True,
+                "message": "Machine released successfully",
+                "previous_owner_notified": owner_notified,
+            }

@@ -4,12 +4,18 @@ import { useProfile } from './hooks/useMachines'
 import Home from './pages/Home'
 import MyMachines from './pages/MyMachines'
 import Profile from './pages/Profile'
+import ForceRelease from './pages/ForceRelease'
 import Navigation from './components/Navigation'
 import Register from './pages/Register'
 
 function App() {
-  const { webApp, user } = useTelegram()
+  const { webApp, user, startParam } = useTelegram()
   const { data: profile, isLoading, error } = useProfile()
+
+  // Parse force release from startParam (e.g., "force_E-WASHER-A1")
+  const forceReleaseQrCode = startParam?.startsWith('force_')
+    ? startParam.substring(6) // Remove "force_" prefix
+    : null
 
   if (!webApp || !user) {
     return (
@@ -29,6 +35,17 @@ function App() {
 
   if (error || !profile) {
     return <Register />
+  }
+
+  // If opened via force release QR code, show force release page
+  if (forceReleaseQrCode) {
+    return (
+      <BrowserRouter>
+        <div className="app">
+          <ForceRelease qrCode={forceReleaseQrCode} />
+        </div>
+      </BrowserRouter>
+    )
   }
 
   return (

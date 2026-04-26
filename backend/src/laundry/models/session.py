@@ -25,8 +25,16 @@ class LaundrySession(Base):
     reminder_sent: Mapped[bool] = mapped_column(Boolean, default=False)
     done_notification_sent: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    user: Mapped["User"] = relationship(back_populates="sessions")
+    # Force release tracking
+    force_released: Mapped[bool] = mapped_column(Boolean, default=False)
+    force_released_by: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=True
+    )
+    force_released_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    user: Mapped["User"] = relationship(back_populates="sessions", foreign_keys=[user_id])
     machine: Mapped["Machine"] = relationship(back_populates="sessions")
+    force_releaser: Mapped["User | None"] = relationship(foreign_keys=[force_released_by])
 
 
 class CoinTransaction(Base):

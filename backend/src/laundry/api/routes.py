@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from laundry.api.auth import get_current_user_data, get_current_user_id
 from laundry.api.schemas import (
+    ForceReleaseResponse,
     MachineResponse,
     PingRequest,
     PingResponse,
@@ -106,3 +107,11 @@ async def ping_machine_user(
     """Ping a machine's user (costs coins)."""
     msg = request.message if request else None
     return await SessionService.ping(telegram_id, machine_id, msg)
+
+
+@router.post("/machines/{qr_code}/force-release", response_model=ForceReleaseResponse)
+async def force_release_machine(
+    qr_code: str, telegram_id: int = Depends(get_current_user_id)
+):
+    """Force release a machine by QR code. Any authenticated user can do this."""
+    return await SessionService.force_release(telegram_id, qr_code)

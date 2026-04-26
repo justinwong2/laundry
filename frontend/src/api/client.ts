@@ -101,4 +101,10 @@ export const api = {
       `/api/ping/${machineId}`,
       { method: 'POST', body: message ? JSON.stringify({ message }) : undefined }
     ),
+
+  forceReleaseMachine: (qrCode: string) =>
+    apiRequest<{ success: boolean; message: string; previous_owner_notified: boolean }>(
+      `/api/machines/${qrCode}/force-release`,
+      { method: 'POST' }
+    ),
 }
