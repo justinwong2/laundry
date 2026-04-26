@@ -38,6 +38,7 @@ function App() {
   }
 
   // If opened via force release QR code, show force release page
+  // .
   if (forceReleaseQrCode) {
     return (
       <BrowserRouter>
