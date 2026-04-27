@@ -138,7 +138,7 @@ async def send_shame_message(
         f"@{safe_target} from Block {target_block} faster come take your laundry can or not, other people also need use 😅",
         f"@{safe_target} Block {target_block} your laundry dry until can collect grandchildren alr, faster come",
         f"@{safe_target} from Block {target_block} hello your clothes calling you, please respond asap",
-        f"@{safe_target} Block {target_block} oi your laundry waiting until going to pass away already come now",
+        f"@{safe_target} Block {target_block} oi your laundry waiting until going to passaway already come now",
     ]
 
     text = f"📢 **NAME AND SHAME** 📢\n\n{random.choice(messages)}"

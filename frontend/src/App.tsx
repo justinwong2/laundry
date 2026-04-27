@@ -9,7 +9,7 @@ import Powerups from './pages/Powerups'
 import ForceRelease from './pages/ForceRelease'
 import Navigation from './components/Navigation'
 import Register from './pages/Register'
-
+//
 function App() {
   const { webApp, user, startParam } = useTelegram()
   const { data: profile, isLoading, error } = useProfile()

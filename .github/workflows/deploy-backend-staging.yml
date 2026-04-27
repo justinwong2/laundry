@@ -1,0 +1,27 @@
+name: Deploy Backend (Staging)
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 (Staging)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/laundry-staging
+            git fetch origin staging
+            git checkout staging
+            git pull origin staging
+            source venv/bin/activate
+            pip install -e backend/
+            sudo systemctl restart laundrybot-staging
