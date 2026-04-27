@@ -1,38 +1,35 @@
 name: Deploy Backend (Staging)
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
     branches: [staging]
-    paths:
-      - 'backend/**'
 
 jobs:
-  test:
+  check-changes:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      backend_changed: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: staging
+          fetch-depth: 2
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
-        working-directory: backend
-
-      - name: Lint
-        run: ruff check src/ && ruff format --check src/
-        working-directory: backend
-
-      - name: Test
-        run: pytest
-        working-directory: backend
+      - name: Check if backend changed
+        id: filter
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q '^backend/'; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+          else
+            echo "backend=false" >> $GITHUB_OUTPUT
+          fi
 
   deploy:
-    needs: test
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.backend_changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to EC2 (Staging)
