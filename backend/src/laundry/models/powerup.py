@@ -4,7 +4,15 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    BigInteger,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from laundry.db.database import Base
@@ -22,6 +30,7 @@ class PowerupType(str, Enum):
     - PowerupType.SPAM_BOMB == "spam_bomb" (can compare to strings)
     - Can be used directly in JSON responses
     """
+
     SPAM_BOMB = "spam_bomb"
     NAME_SHAME = "name_shame"
 
@@ -62,7 +71,9 @@ class UserPowerup(Base):
     powerup_id: Mapped[int] = mapped_column(Integer, ForeignKey("powerups.id"))
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     # Relationships - lets us do user_powerup.user or user_powerup.powerup
     user: Mapped["User"] = relationship(back_populates="powerups")
@@ -94,7 +105,8 @@ class SpamBombJob(Base):
     messages_sent: Mapped[int] = mapped_column(Integer, default=0)  # Progress counter
     messages_total: Mapped[int] = mapped_column(Integer, default=20)  # Target count
     started_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)  # Set when done
+    # Set when done
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     # Relationships for easy access to related data
     user: Mapped["User"] = relationship(foreign_keys=[user_id])

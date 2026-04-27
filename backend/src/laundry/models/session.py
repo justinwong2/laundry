@@ -32,9 +32,13 @@ class LaundrySession(Base):
     )
     force_released_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
-    user: Mapped["User"] = relationship(back_populates="sessions", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship(
+        back_populates="sessions", foreign_keys=[user_id]
+    )
     machine: Mapped["Machine"] = relationship(back_populates="sessions")
-    force_releaser: Mapped["User | None"] = relationship(foreign_keys=[force_released_by])
+    force_releaser: Mapped["User | None"] = relationship(
+        foreign_keys=[force_released_by]
+    )
 
 
 class CoinTransaction(Base):
@@ -45,7 +49,8 @@ class CoinTransaction(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     amount: Mapped[int] = mapped_column(Integer)
-    reason: Mapped[str] = mapped_column(String(50))  # claim, release, ping_sent, ping_received
+    # claim, release, ping_sent, ping_received
+    reason: Mapped[str] = mapped_column(String(50))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user: Mapped["User"] = relationship(back_populates="transactions")

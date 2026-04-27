@@ -64,10 +64,15 @@ async def get_current_user_data(
     if settings.debug and x_telegram_init_data.startswith("dev:"):
         try:
             user_id = int(x_telegram_init_data.split(":")[1])
-            return {"id": user_id, "username": f"dev_{user_id}", "first_name": "Dev", "last_name": "User"}
+            return {
+                "id": user_id,
+                "username": f"dev_{user_id}",
+                "first_name": "Dev",
+                "last_name": "User",
+            }
         except (IndexError, ValueError):
             raise HTTPException(status_code=401, detail="Invalid dev auth format")
-    
+
     return validate_init_data(x_telegram_init_data)
 
 
