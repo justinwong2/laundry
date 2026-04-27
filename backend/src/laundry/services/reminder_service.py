@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import select
 
-from laundry.bot.notifications import send_done_notification, send_reminder, send_spam_bomb_message
+from laundry.bot.notifications import (
+    send_done_notification,
+    send_reminder,
+    send_spam_bomb_message,
+)
 from laundry.config import settings
 from laundry.db.database import async_session
 from laundry.models.machine import Machine
@@ -24,8 +28,7 @@ async def check_reminders() -> None:
     async with async_session() as session:
         # Sessions ending soon that haven't been reminded
         result = await session.execute(
-            select(LaundrySession)
-            .where(
+            select(LaundrySession).where(
                 LaundrySession.ended_at.is_(None),
                 LaundrySession.reminder_sent.is_(False),
                 LaundrySession.expected_end_at <= reminder_threshold,
@@ -63,8 +66,7 @@ async def check_done_notifications() -> None:
     async with async_session() as session:
         # Sessions that are past expected end but not yet released AND not yet notified
         result = await session.execute(
-            select(LaundrySession)
-            .where(
+            select(LaundrySession).where(
                 LaundrySession.ended_at.is_(None),
                 LaundrySession.expected_end_at <= now,
                 LaundrySession.done_notification_sent.is_(False),

@@ -41,7 +41,7 @@ async def send_ping_notification(
         msg += f'\n\nThey say: "{custom_message}"'
     else:
         msg += " Please collect your laundry!"
-        
+
     await bot.send_message(
         chat_id=telegram_id,
         text=msg,
@@ -66,8 +66,9 @@ async def send_force_release_notification(
     await bot.send_message(
         chat_id=telegram_id,
         text=(
-            f"Your session on {machine_type.title()} {machine_code} was force-released "
-            f"by @{releaser_username}. Please collect your laundry if you haven't already."
+            f"Your session on {machine_type.title()} {machine_code} was "
+            f"force-released by @{releaser_username}. "
+            "Please collect your laundry if you haven't already."
         ),
     )
 
@@ -94,14 +95,15 @@ async def send_spam_bomb_message(
     import random
 
     # Variety of messages to rotate through for maximum annoyance
+    machine_name = f"{machine_type.title()} {machine_code}"
     messages = [
         f"🚨 COLLECT YOUR LAUNDRY! ({message_num}/{total_messages})",
-        f"📢 @{sender_username} is STILL waiting for {machine_type.title()} {machine_code}!",
+        f"📢 @{sender_username} is STILL waiting for {machine_name}!",
         f"⚠️ YOUR LAUNDRY IS STILL THERE! Message {message_num} of {total_messages}",
         f"🔔 PING! PING! PING! Please collect from {machine_code}!",
         f"💣 SPAM BOMB {message_num}/{total_messages}: Go get your laundry!",
-        f"⏰ Someone paid 20 coins to remind you... COLLECT YOUR LAUNDRY!",
-        f"👀 @{sender_username} really wants {machine_type.title()} {machine_code}...",
+        "⏰ Someone paid 20 coins to remind you... COLLECT YOUR LAUNDRY!",
+        f"👀 @{sender_username} really wants {machine_name}...",
     ]
 
     text = random.choice(messages)
@@ -111,7 +113,27 @@ async def send_spam_bomb_message(
 
 def _escape_markdown(text: str) -> str:
     """Escape special Markdown characters in text."""
-    for char in ["_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!"]:
+    special_chars = [
+        "_",
+        "*",
+        "[",
+        "]",
+        "(",
+        ")",
+        "~",
+        "`",
+        ">",
+        "#",
+        "+",
+        "-",
+        "=",
+        "|",
+        "{",
+        "}",
+        ".",
+        "!",
+    ]
+    for char in special_chars:
         text = text.replace(char, f"\\{char}")
     return text
 
@@ -132,13 +154,15 @@ async def send_shame_message(
     safe_target = _escape_markdown(target_username)
 
     # Randomly pick a shame message
+    prefix = f"@{safe_target} from Block {target_block}"
+    prefix_short = f"@{safe_target} Block {target_block}"
     messages = [
-        f"@{safe_target} from Block {target_block} eh your laundry still inside, faster come take lah",
-        f"@{safe_target} from Block {target_block} hellooo your laundry waiting for you since damn long alr 😭",
-        f"@{safe_target} from Block {target_block} faster come take your laundry can or not, other people also need use 😅",
-        f"@{safe_target} Block {target_block} your laundry dry until can collect grandchildren alr, faster come",
-        f"@{safe_target} from Block {target_block} hello your clothes calling you, please respond asap",
-        f"@{safe_target} Block {target_block} oi your laundry waiting until going to passaway already come now",
+        f"{prefix} eh your laundry still inside, faster come take lah",
+        f"{prefix} hellooo your laundry waiting for you since damn long alr 😭",
+        f"{prefix} faster come take your laundry can or not, people also need use 😅",
+        f"{prefix_short} your laundry dry until can collect grandchildren alr",
+        f"{prefix} hello your clothes calling you, please respond asap",
+        f"{prefix_short} oi your laundry waiting until going to passaway alr",
     ]
 
     text = f"📢 **NAME AND SHAME** 📢\n\n{random.choice(messages)}"

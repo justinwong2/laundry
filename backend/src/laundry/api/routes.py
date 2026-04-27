@@ -41,9 +41,7 @@ async def list_machines(telegram_id: int = Depends(get_current_user_id)):
 
 
 @router.get("/machines/{machine_id}", response_model=MachineResponse)
-async def get_machine(
-    machine_id: int, telegram_id: int = Depends(get_current_user_id)
-):
+async def get_machine(machine_id: int, telegram_id: int = Depends(get_current_user_id)):
     """Get single machine details."""
     machine = await MachineService.get_by_id(machine_id)
     if not machine:
@@ -57,7 +55,12 @@ async def claim_machine(
     request: SessionCreateRequest, telegram_id: int = Depends(get_current_user_id)
 ):
     """Claim a machine."""
-    return await SessionService.claim(telegram_id, request.machine_id, request.message, request.cycle_duration_minutes)
+    return await SessionService.claim(
+        telegram_id,
+        request.machine_id,
+        request.message,
+        request.cycle_duration_minutes,
+    )
 
 
 @router.delete("/sessions/{session_id}", response_model=SessionResponse)
@@ -94,9 +97,9 @@ async def register_user(
     from laundry.services.user_service import UserService
 
     return await UserService.register(
-        telegram_id=user_data["id"], 
+        telegram_id=user_data["id"],
         block=request.block,
-        username=user_data.get("username")
+        username=user_data.get("username"),
     )
 
 
@@ -109,7 +112,9 @@ async def get_my_transactions(telegram_id: int = Depends(get_current_user_id)):
 # Interactions
 @router.post("/ping/{machine_id}", response_model=PingResponse)
 async def ping_machine_user(
-    machine_id: int, request: PingRequest | None = None, telegram_id: int = Depends(get_current_user_id)
+    machine_id: int,
+    request: PingRequest | None = None,
+    telegram_id: int = Depends(get_current_user_id),
 ):
     """Ping a machine's user (costs coins)."""
     msg = request.message if request else None

@@ -7,9 +7,33 @@ on:
       - 'backend/**'
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+        working-directory: backend
+
+      - name: Lint
+        run: ruff check src/ && ruff format --check src/
+        working-directory: backend
+
+      - name: Test
+        run: pytest
+        working-directory: backend
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to EC2 (Staging)
         uses: appleboy/ssh-action@v1.0.3

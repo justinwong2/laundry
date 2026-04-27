@@ -32,7 +32,9 @@ class UserService:
             }
 
     @staticmethod
-    async def register(telegram_id: int, block: str, username: str | None = None) -> dict:
+    async def register(
+        telegram_id: int, block: str, username: str | None = None
+    ) -> dict:
         """Register a new user."""
         if block not in ["A", "B", "C", "D", "E"]:
             raise HTTPException(status_code=400, detail="Invalid block")

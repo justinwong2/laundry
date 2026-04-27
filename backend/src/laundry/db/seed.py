@@ -19,9 +19,7 @@ async def seed_block_machines(block: str) -> int:
     """
     async with async_session() as session:
         # Check if machines already exist for this block
-        result = await session.execute(
-            select(Machine).where(Machine.block == block)
-        )
+        result = await session.execute(select(Machine).where(Machine.block == block))
         existing = result.scalars().all()
         if existing:
             print(f"Block {block} already has {len(existing)} machines. Skipping.")

@@ -127,7 +127,8 @@ class PowerupService:
             if user.coins < powerup.cost:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Insufficient coins. Need {powerup.cost}, have {user.coins}",
+                    detail=f"Insufficient coins. Need {powerup.cost}, "
+                    f"have {user.coins}",
                 )
 
             # Deduct coins (this also logs the transaction)
@@ -171,7 +172,10 @@ class PowerupService:
 
     @staticmethod
     async def _validate_powerup_use(
-        session: AsyncSession, telegram_id: int, powerup_type: PowerupType, machine_id: int
+        session: AsyncSession,
+        telegram_id: int,
+        powerup_type: PowerupType,
+        machine_id: int,
     ) -> tuple[User, User, UserPowerup, LaundrySession]:
         """
         Common validation for using any powerup.
@@ -268,9 +272,12 @@ class PowerupService:
             await session.commit()
             await session.refresh(job)  # Get the generated ID
 
+            target_name = target.username or "User"
+            msg_count = settings.powerup_spam_bomb_messages
             return {
                 "success": True,
-                "message": f"Spam bomb activated! {target.username or 'User'} will receive {settings.powerup_spam_bomb_messages} messages!",
+                "message": f"Spam bomb activated! {target_name} will receive "
+                f"{msg_count} messages!",
                 "job_id": job.id,
             }
 
@@ -290,9 +297,10 @@ class PowerupService:
 
         async with async_session() as session:
             # Validate everything
-            user, target, user_powerup, target_session = await PowerupService._validate_powerup_use(
+            validation = await PowerupService._validate_powerup_use(
                 session, telegram_id, PowerupType.NAME_SHAME, machine_id
             )
+            user, target, user_powerup, target_session = validation
 
             # Get machine info for the message
             from laundry.models.machine import Machine
@@ -300,7 +308,7 @@ class PowerupService:
             result = await session.execute(
                 select(Machine).where(Machine.id == machine_id)
             )
-            machine = result.scalar_one()
+            result.scalar_one()  # Verify machine exists
 
             # Decrement inventory
             user_powerup.quantity -= 1
@@ -326,7 +334,8 @@ class PowerupService:
                     "message": "Powerup used but notification may have failed.",
                 }
 
+            target_name = target.username or "user"
             return {
                 "success": True,
-                "message": f"Posted shame message to group chat about {target.username or 'user'}!",
+                "message": f"Posted shame message to group chat about {target_name}!",
             }
